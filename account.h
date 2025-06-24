@@ -6,12 +6,13 @@
 #include <string>
 #include <vector>
 
-class Transaction {
-public:
-    std::string type;
+using namespace std;
+
+struct Transaction {
+    string type;
     double amount;
-    std::string timestamp;
-    Transaction(std::string t, double a, std::string ts);
+    string timestamp;
+
     void display() const;
 };
 
@@ -19,15 +20,15 @@ class Account {
 protected:
     static int nextAccNumber;
     int accNumber;
-    std::string name;
-    std::string pin;
+    string name;
+    string pin;
     double balance;
-    std::vector<Transaction> transactions;
+    vector<Transaction> transactions;
 
 public:
     Account();
     void createAccount();
-    bool authenticate(const std::string &enteredPin) const;
+    bool authenticate(const string &enteredPin) const;
     void deposit(double amount);
     void withdraw(double amount);
     void showAccount() const;
@@ -35,10 +36,10 @@ public:
     void calculateInterest();
     int getAccNumber() const;
     double getBalance() const;
-    std::string getName() const;
+    string getName() const;
 
-    void saveToFile(std::ofstream &out);
-    void loadFromFile(std::ifstream &in);
+    void saveToFile(ofstream &out);
+    bool loadFromFile(ifstream &in);
 };
 
 #endif

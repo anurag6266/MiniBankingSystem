@@ -8,12 +8,11 @@ vector<Account> accounts;
 
 void loadAccounts() {
     ifstream in("data.txt");
-    if (!in) return;
-    while (!in.eof()) {
-        Account acc;
-        acc.loadFromFile(in);
-        if (acc.getAccNumber() != 0)
-            accounts.push_back(acc);
+    if (!in.is_open()) return;
+
+    Account acc;
+    while (acc.loadFromFile(in)) {
+        accounts.push_back(acc);
     }
     in.close();
 }
@@ -41,50 +40,76 @@ int main() {
         cout << "1. Create Account\n2. Login\n3. Exit\nChoose: ";
         cin >> choice;
 
-        if (choice == 1) {
-            Account acc;
-            acc.createAccount();
-            accounts.push_back(acc);
-        } else if (choice == 2) {
-            int num;
-            string pin;
-            cout << "Enter Account Number: ";
-            cin >> num;
-            int idx = findAccount(num);
-            if (idx != -1) {
-                cout << "Enter PIN: ";
-                cin >> pin;
-                if (accounts[idx].authenticate(pin)) {
-                    int option;
-                    do {
-                        cout << "\n1. Show Balance\n2. Deposit\n3. Withdraw\n4. Mini Statement\n5. Interest\n6. Logout\nChoose: ";
-                        cin >> option;
-                        if (option == 1) accounts[idx].showAccount();
-                        else if (option == 2) {
-                            double amt;
-                            cout << "Amount to Deposit: ";
-                            cin >> amt;
-                            accounts[idx].deposit(amt);
-                        } else if (option == 3) {
-                            double amt;
-                            cout << "Amount to Withdraw: ";
-                            cin >> amt;
-                            accounts[idx].withdraw(amt);
-                        } else if (option == 4) accounts[idx].showMiniStatement();
-                        else if (option == 5) accounts[idx].calculateInterest();
-                    } while (option != 6);
-                } else {
-                    cout << "Incorrect PIN!\n";
-                }
-            } else {
-                cout << "Account not found!\n";
+        switch (choice) {
+            case 1: {
+                Account acc;
+                acc.createAccount();
+                accounts.push_back(acc);
+                break;
             }
-        } else if (choice == 3) {
-            saveAccounts();
-            cout << "Data saved. Goodbye!\n";
-            break;
-        } else {
-            cout << "Invalid option.\n";
+            case 2: {
+                int num;
+                string pin;
+                cout << "Enter Account Number: ";
+                cin >> num;
+                int idx = findAccount(num);
+                if (idx != -1) {
+                    cout << "Enter PIN: ";
+                    cin >> pin;
+                    if (accounts[idx].authenticate(pin)) {
+                        int option;
+                        do {
+                            cout << "\n1. Show Balance\n2. Deposit\n3. Withdraw\n4. Mini Statement\n5. Interest\n6. Logout\nChoose: ";
+                            cin >> option;
+                            switch (option) {
+                                case 1:
+                                    accounts[idx].showAccount();
+                                    break;
+                                case 2: {
+                                    double amt;
+                                    cout << "Amount to Deposit: ";
+                                    cin >> amt;
+                                    accounts[idx].deposit(amt);
+                                    break;
+                                }
+                                case 3: {
+                                    double amt;
+                                    cout << "Amount to Withdraw: ";
+                                    cin >> amt;
+                                    accounts[idx].withdraw(amt);
+                                    break;
+                                }
+                                case 4:
+                                    accounts[idx].showMiniStatement();
+                                    break;
+                                case 5:
+                                    accounts[idx].calculateInterest();
+                                    break;
+                                case 6:
+                                    cout << "Logging out...\n";
+                                    break;
+                                default:
+                                    cout << "Invalid option.\n";
+                                    break;
+                            }
+                        } while (option != 6);
+                    } else {
+                        cout << "Incorrect PIN!\n";
+                    }
+                } else {
+                    cout << "Account not found!\n";
+                }
+                break;
+            }
+            case 3: {
+                saveAccounts();
+                cout << "Data saved. Goodbye!\n";
+                return 0;
+            }
+            default: {
+                cout << "Invalid option.\n";
+                break;
+            }
         }
     }
     return 0;
